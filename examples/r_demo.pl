@@ -1,4 +1,4 @@
-% :- use_module(library('R')).
+:- use_module(library(r_session)).
 :- use_module(library(lists)).          % member/2.
 :- use_module(library(readutil)).       % read_line_to_codes/2.
 
@@ -6,7 +6,7 @@
 :- ( r_bin(Rbin) ->
           write( 'Will be using the R found at: ' ), nl,
           write( Rbin ), nl, nl
-          ; 
+          ;
           write( 'This session cannot locate an R executable. Please register the location' ), nl,
           write( 'of the R executalbe using r_bin/1 before you can run the demos.' ), nl, nl
    ).

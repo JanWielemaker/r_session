@@ -7,7 +7,7 @@
 
 \onefile
 \htmloutput{.}				% Output directory
-\htmlmainfile{R}			% Main document file
+\htmlmainfile{r_session}		% Main document file
 \bodycolor{white}			% Page colour
 \sloppy
 

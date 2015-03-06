@@ -5,66 +5,16 @@
 
 .SUFFIXES: .tex .doc .pl
 
-SHELL=@SHELL@
-PLBASE=@PLBASE@
-PLARCH=@PLARCH@
-PL=@PL@
-PKGDOC=$(PLBASE)/doc/packages
-PLLIBDIR=$(PLBASE)/library
-EXDIR=$(PKGDOC)/examples/R
-
 PUBLICPL=swipl
-DOCTOTEX=../../man/doc2tex
+SWIPL_SRC=$(HOME)/src/pl-devel
 PLTOTEX=$(PUBLICPL) -q -s pltotex.pl -g pltotex --
-RUNTEX=env TEXINPUTS=../pldoc ../../man/runtex
-DOC=R
+RUNTEX=env TEXINPUTS=$(SWIPL_SRC)/packages/pldoc $(SWIPL_SRC)/man/runtex
+DOCTOTEX=$(SWIPL_SRC)/man/doc2tex
+DOC=r_session
 TEX=$(DOC).tex
 DVI=$(DOC).dvi
 PDF=$(DOC).pdf
 HTML=$(DOC).html
-
-INSTALL=@INSTALL@
-INSTALL_PROGRAM=@INSTALL_PROGRAM@
-INSTALL_DATA=@INSTALL_DATA@
-
-LIBPL=		R.pl
-LIBALL=		$(LIBPL) $(SUPPORT)
-EXAMPLES=	r_demo.pl
-
-all:
-		@echo "Nothing to do for this package"
-
-install:	$(LIBPL)
-		mkdir -p $(DESTDIR)$(PLLIBDIR)
-		$(INSTALL_DATA) $(LIBALL) $(DESTDIR)$(PLLIBDIR)
-		$(PL) -f none -g make -t halt
-
-ln-install:	$(LIBPL)
-		mkdir -p $(DESTDIR)$(PLLIBDIR)
-		for f in $(LIBALL); do \
-		    rm -f $(DESTDIR)$(PLLIBDIR)/$$f; \
-		    ln -s `pwd`/$$f $(DESTDIR)$(PLLIBDIR); \
-		done
-		$(PL) -f none -g make -t halt
-
-rpm-install:	install
-
-pdf-install:	install-examples
-		$(INSTALL_DATA) $(DOC).pdf $(DESTDIR)$(PKGDOC)
-
-html-install:	install-examples
-		$(INSTALL_DATA) $(DOC).html $(DESTDIR)$(PKGDOC)
-
-install-examples::
-		mkdir -p $(DESTDIR)$(EXDIR)
-		(cd examples && $(INSTALL_DATA) $(EXAMPLES) $(DESTDIR)$(EXDIR))
-
-uninstall::
-		rm -f $(PLLIBDIR)/plunit.pl
-		$(PL) -f none -g make -t halt
-
-check::
-		true
 
 ################################################################
 # Documentation
@@ -84,9 +34,8 @@ $(PDF):		$(TEX) $(SUBTEX)
 
 $(TEX):		$(DOCTOTEX)
 
-rdoc.tex:	R.pl
+rdoc.tex:	../prolog/r_session.pl
 		$(PLTOTEX) --out=rdoc $<
-
 .pl.tex:
 		$(PLTOTEX) $*.pl
 .doc.tex:
@@ -97,10 +46,5 @@ rdoc.tex:	R.pl
 ################################################################
 
 clean:
-		rm -f *~ *% config.log
-		rm -f $(TEX) $(SUBTEX)
-		../../man/runtex --clean $(DOC)
-		rm -rf html
-
-distclean:	clean
-		rm -f $(TARGETS) config.cache config.status Makefile
+		rm -f $(TEX) $(SUBTEX) *~
+		$(RUNTEX) --clean $(DOC)
